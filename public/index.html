@@ -1,0 +1,139 @@
+<!DOCTYPE>
+<html ng-app="myApp">
+<head>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>Image editor App</title>
+</head>
+<body>
+<div class="container" ng-controller="AppCtrl">
+    <h1>Image editor</h1>
+    <hr>
+    <div class="row">
+        <div class="col-lg-2" style="height:500px;display: table-cell;vertical-align: middle;;padding-right:20px;">
+
+            <input type="file" accept="image/*" file-change handler="imageUpload(files)" class="filestyle" data-badge="false" data-input="false" data-buttonText="Choose image" /><br/>
+            <button type="button" class="form-control btn-group btn btn-default" ng-click="rotateImage()" ng-disabled="!data.objectAvailable">
+                <span class="glyphicon glyphicon-repeat"></span> Rotate
+            </button>
+            <button type="button" class="form-control btn-group btn btn-default" data-toggle="modal" data-target="#scaleModel"  ng-disabled="!data.objectAvailable">
+                <span class="glyphicon glyphicon-resize-full"></span> Scale
+            </button>
+            <button type="button" class="form-control btn-group btn btn-primary" ng-click="saveImage()"  ng-disabled="!data.objectAvailable">
+                <span class="glyphicon glyphicon-save"></span> Save
+            </button>
+            <a href="" id="download" ng-click="download()" class="form-control btn-group btn btn-success"  ng-disabled="!data.objectAvailable">
+                <span class="glyphicon glyphicon-download"></span> Download
+            </a>
+            <button type="button" class="form-control btn-group btn btn-danger" ng-click="reset()"  ng-disabled="!data.objectAvailable">
+                <span class="glyphicon glyphicon-refresh"></span> Reset
+            </button>
+        </div>
+        <div class="col-lg-7">
+            <canvas width="600" height="500" style="border: 1px solid #ccc" id="canvas">
+
+            </canvas>
+            <blockquote>
+                <footer>Use "Ctrl + Z" for undo; Use "Ctrl + Shift + Z" for redo;</footer>
+            </blockquote>
+        </div>
+        <div class="col-lg-3">
+            <table class="table table-hover">
+                <thead>
+                    <th>#</th>
+                    <th>Saved date</th>
+                    <th>Load</th>
+                    <th>Delete</th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="image in images">
+                        <td>{{image.id}}</td>
+                        <td>{{image.created | date:"dd/MM/yyyy"}}</td>
+                        <td><a href="#" ng-click="getImageData(image.id)"><span class="glyphicon glyphicon-save"></span></a></td>
+                        <td><a href="#" ng-click="deleteImageData(image.id)"><span class="glyphicon glyphicon-remove"></span></a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!--<input type="file" file-change handler="imageUpload(files)" accept="image/*">
+    <input type="button" value="Rotate" ng-click="rotateImage()">
+    <input type="button" value="Scale" ng-click="scaleImage()">
+
+    Width: <input type="text" ng-change="calculateY()" ng-model="width">
+    Height: <input type="text" ng-change="calculateX()" ng-model="height">
+    <button type="button" id="undo" ng-click="undo()" disabled>undo</button>
+    <button type="button" id="redo" ng-click="redo()" disabled>redo</button>
+    <a href="" id="download" ng-click="download()">Download</a>
+    <input type="button" value="Save" ng-click="saveImage()">
+    <div>
+        <canvas width="800" height="500" style="border: 1px solid black" id="canvas">
+
+        </canvas>
+    </div>
+    <div>
+        <table border="1">
+            <thead>
+            <th>Id</th>
+            <th>Created date</th>
+            <th></th>
+            <th></th>
+            </thead>
+            <tbody>
+                <tr ng-repeat="image in images">
+                    <td>{{image.id}}</td>
+                    <td>{{image.created}}</td>
+                    <td><a href="#" ng-click="getImageData(image.id)">Load</a></td>
+                    <td><a href="#" ng-click="deleteImageData(image.id)">Delete</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>-->
+
+
+    <div id="scaleModel" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Input</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">Width</div>
+                                <input type="text" class="form-control" ng-model="scaleProperty.width" ng-change="calculateY()" id="width" placeholder="Width">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">Heigth</div>
+                                <input type="text" class="form-control" ng-model="scaleProperty.height" ng-change="calculateX()" id="heigth" placeholder="Heigth">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" ng-click="scaleImage()" data-dismiss="modal" class="btn btn-primary">Scale</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/bootstrap-filestyle/src/bootstrap-filestyle.min.js"></script>
+<script src="bower_components/angular/angular.min.js"></script>
+<script src="bower_components/angular-hotkeys/build/hotkeys.js"></script>
+<script src="bower_components/fabric.js/dist/fabric.min.js"></script>
+
+<script src="controllers/controller.js"></script>
+
+</body>
+</html>
