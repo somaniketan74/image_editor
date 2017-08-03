@@ -151,7 +151,6 @@
                 if(imageData.objects && imageData.objects.length==2){
                     imageData.objects.splice(1,1);
                 }
-                console.log(imageData);
                 $http.post('/image', {'image':imageData}, undefined)
                     .success(function (data, status, headers, config) {
                         alert('Save successfully');

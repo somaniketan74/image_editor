@@ -37,9 +37,8 @@ exports.deleteImage=function (cond,next) {
         return next(null,result);
     });
 };
-exports.saveImage=function (data,next) {
-    var sql="insert into image_history (image) values ('"+data.image+"')";
-    console.log(sql);
+exports.saveImage=function (image_file,next) {
+    var sql="insert into image_history (image_file) values ('"+image_file+"')";
     executeQuery(sql,function (err,result) {
        if(err){
            return next(err);
